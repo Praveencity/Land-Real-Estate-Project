@@ -429,7 +429,7 @@ const inviteOfficer = async (req, res, next) => {
       expiresAt,
     });
 
-    const setupUrl = `http://localhost:5500/pages/invite?token=${token}`;
+    const setupUrl = `${process.env.CLIENT_URL}/pages/invite.html?token=${token}`;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
