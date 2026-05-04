@@ -30,7 +30,10 @@ const sendOtp = async (req, res, next) => {
     let transporter;
     if (process.env.EMAIL_USER && process.env.EMAIL_USER !== "your_gmail@gmail.com") {
       transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        family: 4,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
@@ -259,7 +262,10 @@ const forgotPassword = async (req, res, next) => {
     let transporter;
     if (process.env.EMAIL_USER && process.env.EMAIL_USER !== "your_gmail@gmail.com") {
       transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        family: 4,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
@@ -432,7 +438,10 @@ const inviteOfficer = async (req, res, next) => {
     const setupUrl = `${process.env.CLIENT_URL}/pages/invite.html?token=${token}`;
 
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      family: 4,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
