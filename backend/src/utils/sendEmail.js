@@ -1,7 +1,7 @@
 /**
- * Email utility — uses Resend HTTP API in production (works on Render/Vercel
- * where SMTP ports are blocked) and falls back to nodemailer + Ethereal for
- * local development.
+ * Email utility — uses Brevo (Sendinblue) HTTP API in production (works on
+ * Render/Vercel where SMTP ports are blocked) and falls back to nodemailer +
+ * Ethereal for local development.
  */
 const nodemailer = require("nodemailer");
 
@@ -10,7 +10,39 @@ const nodemailer = require("nodemailer");
  * @param {{ to: string, subject: string, text?: string, html?: string }} opts
  */
 const sendEmail = async ({ to, subject, text, html }) => {
-  // ── Production: use Resend HTTP API (port 443, never blocked) ──
+  // ── Production: use Brevo HTTP API (port 443, never blocked) ──
+  if (process.env.BREVO_API_KEY) {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": process.env.BREVO_API_KEY,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        sender: {
+          name: process.env.EMAIL_FROM_NAME || "Land Registry System",
+          email: process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER || "noreply@landregistry.app",
+        },
+        to: [{ email: to }],
+        subject,
+        textContent: text,
+        htmlContent: html || (text ? `<p>${text}</p>` : undefined),
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Brevo API error:", data);
+      throw new Error(data.message || "Failed to send email via Brevo");
+    }
+
+    console.log(`📧 Email sent via Brevo to ${to} (messageId: ${data.messageId})`);
+    return data;
+  }
+
+  // ── Fallback: use Resend HTTP API if configured ──
   if (process.env.RESEND_API_KEY) {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
