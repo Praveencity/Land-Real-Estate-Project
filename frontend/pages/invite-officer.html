@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invite Officer • Land Registry System</title>
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20260416b" />
+  </head>
+  <body class="login-page" data-auth="private">
+    <header id="navbar-root"></header>
+
+    <main class="container" style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
+      <section class="card" style="max-width: 480px; width: 100%; padding: 2.5rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <h2 style="margin: 0 0 0.5rem 0; color: var(--heading);">Invite Government Officer</h2>
+          <p style="color: var(--muted); margin: 0;">Send an invitation link to onboard a new officer.</p>
+        </div>
+
+        <form id="invite-officer-form">
+          <div style="margin-bottom: 1.5rem;">
+            <label for="invite-email" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Officer's Email Address</label>
+            <input class="input" id="invite-email" type="email" placeholder="officer@gov.in" required style="width: 100%; padding: 0.8rem;" />
+          </div>
+
+          <button class="btn btn-primary" type="submit" id="invite-btn" style="width: 100%; padding: 0.8rem; font-size: 1rem;">
+            Send Invitation
+          </button>
+          
+          <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="/pages/admin-dashboard.html" style="color: var(--muted); text-decoration: none; font-size: 0.9rem;">&larr; Back to Admin Dashboard</a>
+          </div>
+
+          <p id="invite-message" style="text-align: center; margin-top: 1rem; font-size: 0.9rem;"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/navbar.js?v=20260416b"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const currentUser = getUser();
+        const isAdmin = roleKey(currentUser?.role) === "admin";
+        
+        if (!isAdmin) {
+          document.querySelector("main").innerHTML = `
+            <div style="text-align:center; padding: 3rem; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 400px;">
+              <h3 style="color: var(--danger); margin-top: 0;">Access Restricted</h3>
+              <p style="color: var(--muted); margin-bottom: 1.5rem;">Only Administrators can invite officers.</p>
+              <a href="/pages/dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+            </div>
+          `;
+          return;
+        }
+
+        document.getElementById("invite-officer-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          
+          const emailInput = document.getElementById("invite-email");
+          const email = emailInput.value.trim();
+          const inviteBtn = document.getElementById("invite-btn");
+          const msgEl = document.getElementById("invite-message");
+          
+          msgEl.textContent = "";
+          
+          try {
+            inviteBtn.disabled = true;
+            inviteBtn.textContent = "Sending...";
+            
+            const res = await apiRequest("/auth/invite-officer", {
+              method: "POST",
+              body: JSON.stringify({ email })
+            });
+            
+            msgEl.textContent = res.message || "Invitation sent successfully!";
+            msgEl.style.color = "var(--success)";
+            emailInput.value = "";
+            
+            if (typeof showToast === "function") showToast(res.message, "success");
+            
+          } catch (err) {
+            msgEl.textContent = err.message;
+            msgEl.style.color = "var(--danger)";
+            if (typeof showToast === "function") showToast(err.message, "error");
+          } finally {
+            inviteBtn.disabled = false;
+            inviteBtn.textContent = "Send Invitation";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

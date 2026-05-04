@@ -29,6 +29,16 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    governmentId: {
+      type: String,
+      trim: true,
+      select: false,
+    },
+    governmentIdStatus: {
+      type: String,
+      enum: ["Pending", "Verified", "Rejected", "None"],
+      default: "None",
+    },
   },
   {
     timestamps: true,

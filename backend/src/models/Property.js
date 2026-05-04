@@ -55,6 +55,18 @@ const propertySchema = new mongoose.Schema(
       required: true,
       min: 1,
     },
+    bedrooms: {
+      type: Number,
+      default: 0,
+    },
+    bathrooms: {
+      type: Number,
+      default: 0,
+    },
+    plotSize: {
+      type: Number,
+      default: 0,
+    },
     approval: {
       status: {
         type: String,

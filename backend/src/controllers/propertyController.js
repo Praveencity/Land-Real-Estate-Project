@@ -6,7 +6,7 @@ const generateId = require("../utils/generateId");
 
 const createProperty = async (req, res, next) => {
   try {
-    const { title, titleNumber, location, price, area, type } = req.body;
+    const { title, titleNumber, location, price, area, type, bedrooms, bathrooms, plotSize } = req.body;
     const normalizedTitleNumber = String(titleNumber || "").trim();
     const documentFiles = req.files?.documents || [];
 
@@ -23,6 +23,9 @@ const createProperty = async (req, res, next) => {
       location,
       price,
       area,
+      bedrooms,
+      bathrooms,
+      plotSize,
       type,
       owner: req.user._id,
       ownershipHistory: [
@@ -226,11 +229,14 @@ const updateProperty = async (req, res, next) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const updates = (({ title, location, price, area, type, isOpenForSale }) => ({
+    const updates = (({ title, location, price, area, bedrooms, bathrooms, plotSize, type, isOpenForSale }) => ({
       title,
       location,
       price,
       area,
+      bedrooms,
+      bathrooms,
+      plotSize,
       type,
       isOpenForSale,
     }))(req.body);

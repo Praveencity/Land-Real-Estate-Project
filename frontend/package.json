@@ -4,7 +4,7 @@
   "description": "Land and real estate registration frontend",
   "main": "index.html",
   "scripts": {
-    "start": "npx serve . -l 5500"
+    "start": "npx http-server . -p 5500 -c-1"
   },
   "keywords": [],
   "author": "",

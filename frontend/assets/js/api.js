@@ -1,4 +1,4 @@
-const SERVER_URL = "https://land-real-estate-project.onrender.com";
+const SERVER_URL = "http://localhost:5000";
 const API_BASE_URL = `${SERVER_URL}/api`;
 
 const getToken = () => localStorage.getItem("lrs_token");
@@ -76,7 +76,11 @@ const apiRequest = async (path, options = {}) => {
   if (!response.ok) {
     if (response.status === 401 || response.status === 403) {
       clearAuth();
-      window.location.href = "/pages/login.html";
+      if (document.body.dataset.auth === "private") {
+        window.location.href = "/pages/login.html";
+      } else {
+        window.location.reload();
+      }
       throw new Error("Session expired. Please log in again.");
     }
     const message = data.message || "Request failed";

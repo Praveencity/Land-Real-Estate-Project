@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login • Land Registry System</title>
     <link rel="stylesheet" href="/assets/css/styles.css?v=20260416b" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
-  <body data-auth="guest">
+  <body data-auth="guest" style="display: flex; flex-direction: column; min-height: 100vh;">
     <header id="navbar-root"></header>
 
-    <main class="container">
+    <main class="container" style="flex: 1; margin-bottom: 4rem;">
       <section class="page-header">
         <h1>Secure Login</h1>
         <p>Sign in to your role-based dashboard and manage your land registrations.</p>
@@ -19,26 +20,53 @@
         <div style="text-align: center; margin-bottom: 1.5rem;">
           <h2 style="color: var(--gov-blue); margin: 0;">Welcome Back</h2>
           <p style="color: var(--muted);">Enter your credentials to continue</p>
+
         </div>
         <form id="auth-form" data-mode="login">
           <div style="margin-bottom: 1rem;">
             <label for="email" style="display: flex; align-items: center; gap: 0.5rem;">
               Email Address
             </label>
-            <input class="input" id="email" name="email" type="email" placeholder="your.email@example.com" required />
+            <input class="input" id="email" name="email" type="email" autocomplete="email" placeholder="your.email@example.com" required />
           </div>
           <div style="margin-bottom: 1.5rem;">
             <label for="password" style="display: flex; align-items: center; gap: 0.5rem;">
               Password
             </label>
             <div class="input-group">
-              <input class="input" id="password" name="password" type="password" placeholder="Enter your password" required />
+              <input class="input" id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required />
               <button class="password-toggle" type="button" data-password-toggle="password" aria-label="Show password">Show</button>
             </div>
           </div>
           <button class="btn btn-primary" type="submit" style="width: 100%; padding: 0.75rem; font-size: 1rem;">
             Sign In
           </button>
+          <div style="text-align: right; margin-top: 0.5rem;">
+            <a href="forgot-password.html" style="color: var(--gov-blue); font-size: 0.875rem; text-decoration: none;">Forgot Password?</a>
+          </div>
+          <div style="margin: 1.5rem 0; display: flex; align-items: center; text-align: center; color: var(--muted);">
+            <div style="flex: 1; border-top: 1px solid #dbe5f0;"></div>
+            <span style="padding: 0 10px; font-size: 0.875rem;">OR</span>
+            <div style="flex: 1; border-top: 1px solid #dbe5f0;"></div>
+          </div>
+          
+          <div id="g_id_onload"
+               data-client_id="5813525369-3r64vope545ifd4ocsgdn0rlktq4g7vr.apps.googleusercontent.com"
+               data-context="use"
+               data-ux_mode="popup"
+               data-callback="handleGoogleCredentialResponse"
+               data-auto_prompt="false">
+          </div>
+          <div class="g_id_signin"
+               data-type="standard"
+               data-shape="rectangular"
+               data-theme="outline"
+               data-text="continue_with"
+               data-size="large"
+               data-logo_alignment="left"
+               style="display: flex; justify-content: center; margin-bottom: 1.5rem;">
+          </div>
+
           <p id="auth-message" class="mt-06" style="text-align: center; color: var(--danger);"></p>
         </form>
         <div style="text-align: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #dbe5f0;">

@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register • Land Registry System</title>
     <link rel="stylesheet" href="/assets/css/styles.css?v=20260416b" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
-  <body class="register-page" data-auth="guest">
+  <body class="register-page" data-auth="guest" style="display: flex; flex-direction: column; min-height: 100vh;">
     <header id="navbar-root"></header>
 
-    <main class="container register-layout">
+    <main class="container register-layout" style="flex: 1; margin-bottom: 4rem;">
       <section class="register-hero">
         <div class="register-copy">
           <span class="register-kicker">Official Government Registry</span>
@@ -54,23 +55,31 @@
             <div class="form-row">
               <div>
                 <label for="firstName">First Name</label>
-                <input class="input" id="firstName" name="firstName" type="text" placeholder="e.g. Jane" required />
+                <input class="input" id="firstName" name="firstName" type="text" autocomplete="given-name" placeholder="e.g. Jane" required />
               </div>
               <div>
                 <label for="lastName">Last Name</label>
-                <input class="input" id="lastName" name="lastName" type="text" placeholder="e.g. Doe" required />
+                <input class="input" id="lastName" name="lastName" type="text" autocomplete="family-name" placeholder="e.g. Doe" required />
               </div>
             </div>
 
             <div class="register-field">
               <label for="email">Official Email Address</label>
-              <input class="input" id="email" name="email" type="email" placeholder="jane.doe@example.com" required />
+              <div style="display: flex; gap: 0.5rem;">
+                <input class="input" id="email" name="email" type="email" autocomplete="email" placeholder="jane.doe@example.com" required style="flex: 1;" />
+                <button type="button" class="btn btn-outline" id="send-otp-btn" style="white-space: nowrap;">Send OTP</button>
+              </div>
+            </div>
+
+            <div class="register-field">
+              <label for="otp">Verification Code (OTP)</label>
+              <input class="input" id="otp" name="otp" type="text" autocomplete="one-time-code" placeholder="6-digit code sent to your email" required />
             </div>
 
             <div class="register-field">
               <label for="password">Secure Password</label>
               <div class="input-group">
-                <input class="input" id="password" name="password" type="password" placeholder="••••••••" minlength="8" required />
+                <input class="input" id="password" name="password" type="password" autocomplete="new-password" placeholder="••••••••" minlength="8" required />
                 <button class="password-toggle" type="button" data-password-toggle="password" aria-label="Show password">Show</button>
               </div>
               <p class="register-help">Must be at least 12 characters, including numbers and symbols.</p>
@@ -79,20 +88,11 @@
             <div class="register-field">
               <label for="confirmPassword">Confirm Password</label>
               <div class="input-group">
-                <input class="input" id="confirmPassword" name="confirmPassword" type="password" placeholder="••••••••" minlength="8" required />
+                <input class="input" id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="••••••••" minlength="8" required />
                 <button class="password-toggle" type="button" data-password-toggle="confirmPassword" aria-label="Show password">Show</button>
               </div>
             </div>
 
-            <div class="register-field">
-              <label for="role">Role</label>
-              <select id="role" name="role" required>
-                <option value="">Choose your role</option>
-                <option value="User">User</option>
-                <option value="Government Officer">Government Officer</option>
-                <option value="Admin">Admin</option>
-              </select>
-            </div>
 
             <label class="register-terms">
               <input type="checkbox" name="terms" required />
@@ -100,6 +100,30 @@
             </label>
 
             <button class="btn btn-primary register-submit" type="submit">Create Account</button>
+
+            <div style="margin: 1.5rem 0; display: flex; align-items: center; text-align: center; color: var(--muted);">
+              <div style="flex: 1; border-top: 1px solid #dbe5f0;"></div>
+              <span style="padding: 0 10px; font-size: 0.875rem;">OR</span>
+              <div style="flex: 1; border-top: 1px solid #dbe5f0;"></div>
+            </div>
+
+            <div id="g_id_onload"
+                 data-client_id="5813525369-3r64vope545ifd4ocsgdn0rlktq4g7vr.apps.googleusercontent.com"
+                 data-context="use"
+                 data-ux_mode="popup"
+                 data-callback="handleGoogleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="continue_with"
+                 data-size="large"
+                 data-logo_alignment="left"
+                 style="display: flex; justify-content: center; margin-bottom: 1rem;">
+            </div>
+
             <p id="auth-message" class="register-message"></p>
           </form>
 

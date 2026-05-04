@@ -160,6 +160,9 @@ const openSellEditor = (propertyId, prefill, options = {}) => {
   const typeInput = document.getElementById("sell-type");
   const priceInput = document.getElementById("sell-price");
   const areaInput = document.getElementById("sell-area");
+  const bedroomsInput = document.getElementById("sell-bedrooms");
+  const bathroomsInput = document.getElementById("sell-bathrooms");
+  const plotSizeInput = document.getElementById("sell-plotSize");
   const imagesInput = document.getElementById("sell-images");
   const documentsInput = document.getElementById("sell-documents");
 
@@ -168,6 +171,9 @@ const openSellEditor = (propertyId, prefill, options = {}) => {
   if (typeInput) typeInput.value = prefill?.type || "Residential";
   if (priceInput) priceInput.value = prefill?.price ?? "";
   if (areaInput) areaInput.value = prefill?.area ?? "";
+  if (bedroomsInput) bedroomsInput.value = prefill?.bedrooms ?? "";
+  if (bathroomsInput) bathroomsInput.value = prefill?.bathrooms ?? "";
+  if (plotSizeInput) plotSizeInput.value = prefill?.plotSize ?? "";
   sellImagesManager.clear();
   sellDocumentsManager.clear();
 
@@ -527,6 +533,9 @@ const renderProperties = (properties = [], propertyStatusMap = new Map()) => {
             type: property.type || "Residential",
             price: property.price ?? "",
             area: property.area ?? "",
+            bedrooms: property.bedrooms ?? "",
+            bathrooms: property.bathrooms ?? "",
+            plotSize: property.plotSize ?? "",
           })
         );
 

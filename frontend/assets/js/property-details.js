@@ -173,10 +173,10 @@ const renderPropertyDetails = (property, propertyStatus = "Available", activeReg
   const lastRegistered = formatDate(property?.updatedAt || property?.createdAt);
 
   const metrics = [
-    { icon: "▦", value: property?.bedrooms ?? 6, label: "Bedrooms" },
-    { icon: "▥", value: property?.bathrooms ?? 4, label: "Bathrooms" },
-    { icon: "◪", value: property?.area ? `${property.area}` : "4,850", label: "Sq Ft (Internal)" },
-    { icon: "▲", value: property?.plotSize || "0.2", label: "Acres (Plot)" },
+    { icon: "▦", value: property?.bedrooms ?? "N/A", label: "Bedrooms" },
+    { icon: "▥", value: property?.bathrooms ?? "N/A", label: "Bathrooms" },
+    { icon: "◪", value: property?.area ? `${property.area}` : "N/A", label: "Sq Ft (Internal)" },
+    { icon: "▲", value: property?.plotSize || "N/A", label: "Acres (Plot)" },
   ];
 
   let activeRegistrations = Array.isArray(activeRegistrationsInput) ? activeRegistrationsInput : [];

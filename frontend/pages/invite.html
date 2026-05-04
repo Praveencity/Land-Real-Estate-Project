@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Officer Setup • Land Registry System</title>
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20260416b" />
+  </head>
+  <body class="login-page" data-auth="public">
+    <header id="navbar-root"></header>
+
+    <main class="container" style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
+      <section class="card" style="max-width: 480px; width: 100%; padding: 2.5rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <h2 style="margin: 0 0 0.5rem 0; color: var(--heading);">Government Officer Setup</h2>
+          <p style="color: var(--muted); margin: 0;">Welcome! Complete your registration below.</p>
+        </div>
+
+        <form id="officer-setup-form">
+          <div style="margin-bottom: 1.2rem;">
+            <label for="fullName" style="display: block; margin-bottom: 0.3rem; font-weight: 600;">Full Legal Name</label>
+            <input class="input" id="fullName" type="text" placeholder="John Doe" required style="width: 100%;" />
+          </div>
+
+          <div style="margin-bottom: 1.2rem;">
+            <label for="governmentId" style="display: block; margin-bottom: 0.3rem; font-weight: 600;">Government Employee ID</label>
+            <input class="input" id="governmentId" type="text" placeholder="e.g., GOV-12345" required style="width: 100%;" />
+          </div>
+
+          <div style="margin-bottom: 1.2rem;">
+            <label for="password" style="display: block; margin-bottom: 0.3rem; font-weight: 600;">Secure Password</label>
+            <input class="input" id="password" type="password" placeholder="Minimum 8 characters" minlength="8" required style="width: 100%;" />
+          </div>
+
+          <div style="margin-bottom: 2rem;">
+            <label for="confirmPassword" style="display: block; margin-bottom: 0.3rem; font-weight: 600;">Confirm Password</label>
+            <input class="input" id="confirmPassword" type="password" placeholder="Re-enter password" minlength="8" required style="width: 100%;" />
+          </div>
+
+          <button class="btn btn-primary" type="submit" id="submit-btn" style="width: 100%; padding: 0.8rem; font-size: 1rem;">
+            Complete Setup
+          </button>
+
+          <p id="setup-message" style="text-align: center; margin-top: 1rem; font-size: 0.9rem;"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/navbar.js?v=20260416b"></script>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      const msgEl = document.getElementById("setup-message");
+
+      if (!token) {
+        msgEl.textContent = "Invalid setup link. Missing token.";
+        msgEl.style.color = "var(--danger)";
+        document.getElementById("submit-btn").disabled = true;
+      }
+
+      document.getElementById("officer-setup-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        if (!token) return;
+
+        const fullName = document.getElementById("fullName").value.trim();
+        const governmentId = document.getElementById("governmentId").value.trim();
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+
+        if (password !== confirmPassword) {
+          msgEl.textContent = "Passwords do not match.";
+          msgEl.style.color = "var(--danger)";
+          return;
+        }
+
+        const submitBtn = document.getElementById("submit-btn");
+
+        try {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Setting up...";
+          msgEl.textContent = "";
+
+          const res = await apiRequest("/auth/setup-officer", {
+            method: "POST",
+            body: JSON.stringify({ token, fullName, governmentId, password })
+          });
+
+          // Automatically log them in by setting the token and navigating
+          localStorage.setItem("lrs_token", res.token);
+          localStorage.setItem("lrs_user", JSON.stringify(res.user));
+          
+          msgEl.textContent = "Success! Redirecting...";
+          msgEl.style.color = "var(--success)";
+          
+          setTimeout(() => {
+            window.location.href = "/pages/dashboard.html";
+          }, 1000);
+          
+        } catch (err) {
+          msgEl.textContent = err.message;
+          msgEl.style.color = "var(--danger)";
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Complete Setup";
+        }
+      });
+    </script>
+  </body>
+</html>

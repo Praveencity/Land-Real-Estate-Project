@@ -18,6 +18,35 @@ const bindPasswordToggles = () => {
 
 bindPasswordToggles();
 
+const sendOtpBtn = document.getElementById("send-otp-btn");
+if (sendOtpBtn) {
+  sendOtpBtn.addEventListener("click", async () => {
+    const emailInput = document.getElementById("email");
+    if (!emailInput || !emailInput.value) {
+      if (typeof showToast === "function") showToast("Please enter an email first", "error");
+      return;
+    }
+    try {
+      sendOtpBtn.disabled = true;
+      sendOtpBtn.textContent = "Sending...";
+      await apiRequest("/auth/send-otp", {
+        method: "POST",
+        body: JSON.stringify({ email: emailInput.value })
+      });
+      if (typeof showToast === "function") showToast("OTP sent! (If you are using Ethereal, check backend terminal)", "success");
+      sendOtpBtn.textContent = "Sent!";
+      setTimeout(() => {
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.textContent = "Resend OTP";
+      }, 30000); // Allow resend after 30s
+    } catch (err) {
+      if (typeof showToast === "function") showToast(err.message, "error");
+      sendOtpBtn.disabled = false;
+      sendOtpBtn.textContent = "Send OTP";
+    }
+  });
+}
+
 if (authForm) {
   authForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -83,3 +112,29 @@ if (authForm) {
     }
   });
 }
+
+
+// Google OAuth Handler
+window.handleGoogleCredentialResponse = async (response) => {
+  const messageBox = document.getElementById("auth-message");
+  if (messageBox) {
+    messageBox.textContent = "";
+  }
+  
+  try {
+    const data = await apiRequest("/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ credential: response.credential })
+    });
+    
+    setAuth(data.token, data.user);
+    if (typeof showToast === "function") showToast("Google Sign-In successful", "success");
+    window.location.href = "/pages/dashboard.html";
+  } catch (error) {
+    if (messageBox) {
+      messageBox.textContent = error.message;
+      messageBox.style.color = "var(--danger)";
+    }
+    if (typeof showToast === "function") showToast(error.message, "error");
+  }
+};

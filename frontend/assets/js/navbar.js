@@ -36,6 +36,7 @@ const menuByRole = {
     { label: "Verify Requests", href: "/pages/requests?verify=1" },
     { label: "All Properties", href: "/pages/properties.html" },
     { label: "Users", href: "/pages/admin-dashboard.html" },
+    { label: "Invite Officer", href: "/pages/invite-officer.html" },
     { label: "Logout", href: "#logout", action: "logout" },
   ],
   "government officer": [
