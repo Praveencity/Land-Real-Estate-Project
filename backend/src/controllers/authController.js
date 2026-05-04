@@ -31,9 +31,10 @@ const sendOtp = async (req, res, next) => {
     if (process.env.EMAIL_USER && process.env.EMAIL_USER !== "your_gmail@gmail.com") {
       transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
+        port: 587,
+        secure: false,
         family: 4,
+        tls: { rejectUnauthorized: false },
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
@@ -263,9 +264,10 @@ const forgotPassword = async (req, res, next) => {
     if (process.env.EMAIL_USER && process.env.EMAIL_USER !== "your_gmail@gmail.com") {
       transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
+        port: 587,
+        secure: false,
         family: 4,
+        tls: { rejectUnauthorized: false },
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
@@ -439,9 +441,10 @@ const inviteOfficer = async (req, res, next) => {
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
       family: 4,
+      tls: { rejectUnauthorized: false },
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
