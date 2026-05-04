@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const Otp = require("../models/Otp");
 const createToken = require("../utils/createToken");
-const nodemailer = require("nodemailer");
+const sendEmail = require("../utils/sendEmail");
 const { OAuth2Client } = require("google-auth-library");
 const crypto = require("crypto");
 const Property = require("../models/Property");
@@ -26,50 +26,14 @@ const sendOtp = async (req, res, next) => {
     await Otp.deleteMany({ email });
     await Otp.create({ email, otp: otpCode });
 
-    // Send email via nodemailer
-    let transporter;
-    if (process.env.EMAIL_USER && process.env.EMAIL_USER !== "your_gmail@gmail.com") {
-      transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        family: 4,
-        tls: { rejectUnauthorized: false },
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-    } else {
-      // Use Ethereal Email for testing
-      const testAccount = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        },
-      });
-    }
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER !== "your_gmail@gmail.com" ? process.env.EMAIL_USER : '"Land Registry System" <noreply@landregistry.local>',
+    // Send email
+    await sendEmail({
       to: email,
       subject: "Your OTP for Land Registry System",
       text: `Your One-Time Password (OTP) for signing up is: ${otpCode}. It is valid for 10 minutes.`,
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-
-    if (!process.env.EMAIL_USER || process.env.EMAIL_USER === "your_gmail@gmail.com") {
-      console.log("----------------------------------------");
-      console.log("📧 TEST EMAIL SENT! (No real email used)");
-      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-      console.log("OTP Code is:", otpCode);
-      console.log("----------------------------------------");
-    }
+    console.log(`OTP for ${email}: ${otpCode}`);
 
     return res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
@@ -260,43 +224,13 @@ const forgotPassword = async (req, res, next) => {
     await Otp.create({ email, otp: otpCode });
 
     // Send email
-    let transporter;
-    if (process.env.EMAIL_USER && process.env.EMAIL_USER !== "your_gmail@gmail.com") {
-      transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        family: 4,
-        tls: { rejectUnauthorized: false },
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-    } else {
-      const testAccount = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false,
-        auth: { user: testAccount.user, pass: testAccount.pass },
-      });
-    }
-
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_USER !== "your_gmail@gmail.com" ? process.env.EMAIL_USER : '"Land Registry System" <noreply@landregistry.local>',
+    await sendEmail({
       to: email,
       subject: "Password Reset OTP - Land Registry System",
       text: `Your password reset OTP is: ${otpCode}. It is valid for 10 minutes. If you did not request this, please ignore this email.`,
     });
 
-    if (!process.env.EMAIL_USER || process.env.EMAIL_USER === "your_gmail@gmail.com") {
-      console.log("----------------------------------------");
-      console.log("📧 PASSWORD RESET EMAIL SENT! (Test Mode)");
-      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-      console.log("OTP Code is:", otpCode);
-      console.log("----------------------------------------");
-    }
+    console.log(`Password reset OTP for ${email}: ${otpCode}`);
 
     return res.status(200).json({ message: "Password reset OTP sent to your email" });
   } catch (error) {
@@ -439,20 +373,7 @@ const inviteOfficer = async (req, res, next) => {
 
     const setupUrl = `${process.env.CLIENT_URL}/pages/invite.html?token=${token}`;
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      family: 4,
-      tls: { rejectUnauthorized: false },
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"Land Registry Admin" <${process.env.EMAIL_USER}>`,
+    await sendEmail({
       to: email,
       subject: "Invitation to Join Land Registry System as Government Officer",
       html: `
