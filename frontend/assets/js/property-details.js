@@ -297,6 +297,11 @@ const renderPropertyDetails = (property, propertyStatus = "Available", activeReg
 
           <div class="pd3-actions">
             ${transferAction}
+            ${currentRole === 'admin' ? `
+              <button class="btn btn-outline" style="color: #b45309; border-color: #fcd34d;" onclick="openComplaintModal('${property._id}')">
+                ⚠️ Report Suspicious
+              </button>
+            ` : ''}
             <button class="btn btn-outline" type="button" disabled>Contact Registry Agent</button>
           </div>
           ${progressBlock}
@@ -549,3 +554,62 @@ const loadPropertyDetails = async () => {
 };
 
 window.addEventListener("DOMContentLoaded", loadPropertyDetails);
+
+
+// Complaint Modal Logic (Shared with Admin)
+let allUsers = [];
+
+window.openComplaintModal = async (propertyId) => {
+  document.getElementById("complaint-property-id").value = propertyId;
+  const modal = document.getElementById("complaint-modal");
+  modal.style.display = "flex";
+
+  if (allUsers.length === 0) {
+    try {
+      const { users } = await apiRequest("/auth/users");
+      allUsers = users;
+      filterRecipients();
+    } catch (err) {
+      showToast("Failed to load users", "error");
+    }
+  } else {
+    filterRecipients();
+  }
+};
+
+window.filterRecipients = () => {
+  const type = document.getElementById("complaint-recipient-type").value;
+  const select = document.getElementById("complaint-recipient");
+  select.innerHTML = '<option value="">Select...</option>';
+  
+  const filtered = allUsers.filter(u => u.role === type);
+  filtered.forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = u._id;
+    opt.textContent = `${u.fullName} (${u.email})`;
+    select.appendChild(opt);
+  });
+};
+
+window.closeComplaintModal = () => {
+  document.getElementById("complaint-modal").style.display = "none";
+  document.getElementById("complaint-form").reset();
+};
+
+document.getElementById("complaint-form")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const propertyId = document.getElementById("complaint-property-id").value;
+  const recipientId = document.getElementById("complaint-recipient").value;
+  const description = document.getElementById("complaint-description").value;
+
+  try {
+    await apiRequest("/complaints", {
+      method: "POST",
+      body: JSON.stringify({ propertyId, recipientId, description })
+    });
+    showToast("Complaint raised successfully", "success");
+    closeComplaintModal();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+});
