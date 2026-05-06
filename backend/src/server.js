@@ -5,19 +5,27 @@ const User = require("./models/User");
 const bcrypt = require("bcryptjs");
 
 const seedAdmin = async () => {
-  const adminEmail = "landregistry3@gmail.com";
-  const existingAdmin = await User.findOne({ email: adminEmail });
-  if (!existingAdmin) {
-    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || "Admin@1234!", 12);
-    await User.create({
-      fullName: "System Admin",
-      email: adminEmail,
-      password: hashedPassword,
-      role: "Admin",
-      governmentId: "ADMIN-SYS-001",
-      governmentIdStatus: "Verified"
-    });
-    console.log("Hardcoded Admin user created.");
+  try {
+    const adminEmail = "landregistry3@gmail.com";
+    const existingAdmin = await User.findOne({ email: adminEmail });
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || "Admin@1234!", 12);
+      await User.create({
+        fullName: "System Admin",
+        email: adminEmail,
+        password: hashedPassword,
+        role: "Admin",
+        governmentId: "ADMIN-SYS-001",
+        governmentIdStatus: "Verified"
+      });
+      console.log("Hardcoded Admin user created.");
+    }
+  } catch (err) {
+    if (err.code === 11000) {
+      console.log("Admin user already exists (duplicate key).");
+    } else {
+      console.error("Error seeding admin:", err.message);
+    }
   }
 };
 

@@ -75,6 +75,9 @@
           <button class="admin-tab" data-tab="properties">
             <span style="font-size: 1.2rem;">🏠</span> Properties
           </button>
+          <button class="admin-tab" data-tab="complaints">
+            <span style="font-size: 1.2rem;">⚠️</span> Complaints
+          </button>
         </div>
 
         <div id="panel-users" class="admin-panel active" style="padding: 0 1.5rem 1.5rem 1.5rem;">
@@ -91,6 +94,10 @@
 
         <div id="panel-properties" class="admin-panel" style="padding: 0 1.5rem 1.5rem 1.5rem;">
           <div id="properties-root" class="list admin-list-scroll"></div>
+        </div>
+
+        <div id="panel-complaints" class="admin-panel" style="padding: 0 1.5rem 1.5rem 1.5rem;">
+          <div id="complaints-root" class="list admin-list-scroll"></div>
         </div>
       </section>
     </main>
@@ -129,6 +136,74 @@
         <p>&copy; 2026 Land Registry System. All rights reserved.</p>
       </div>
     </footer>
+
+    <!-- Complaint Modal -->
+    <div id="complaint-modal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+      <div class="modal-content card" style="width: 90%; max-width: 500px; padding: 2rem; position: relative;">
+        <span class="close-modal" onclick="closeComplaintModal()" style="position: absolute; right: 1.5rem; top: 1rem; font-size: 1.5rem; cursor: pointer;">&times;</span>
+        <h2 style="margin-bottom: 1.5rem;">Report Suspicious Property</h2>
+        <form id="complaint-form">
+          <input type="hidden" id="complaint-property-id">
+          <div class="form-group">
+            <label for="complaint-recipient-type">Target Category</label>
+            <select id="complaint-recipient-type" class="input" onchange="filterRecipients()">
+              <option value="Government Officer">Government Officer</option>
+              <option value="User">Property Owner / User</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-top: 1rem;">
+            <label for="complaint-recipient">Select Recipient</label>
+            <select id="complaint-recipient" class="input" required>
+              <option value="">Select...</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-top: 1rem;">
+            <label for="complaint-description">Description of Suspicion</label>
+            <textarea id="complaint-description" class="input" rows="4" placeholder="Describe why this property is suspicious..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Submit Complaint</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Forward Modal -->
+    <div id="forward-modal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+      <div class="modal-content card" style="width: 90%; max-width: 500px; padding: 2rem; position: relative;">
+        <span class="close-modal" onclick="closeForwardModal()" style="position: absolute; right: 1.5rem; top: 1rem; font-size: 1.5rem; cursor: pointer;">&times;</span>
+        <h2 style="margin-bottom: 1.5rem;">Forward Complaint</h2>
+        <form id="forward-form">
+          <input type="hidden" id="forward-complaint-id">
+          <div class="form-group">
+            <label for="forward-recipient">Select Next Officer</label>
+            <select id="forward-recipient" class="input" required>
+              <option value="">Select Officer...</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-top: 1rem;">
+            <label for="forward-note">Forwarding Note</label>
+            <textarea id="forward-note" class="input" rows="3" placeholder="Add a note for the next officer..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Forward Now</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Report View Modal -->
+    <div id="report-modal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+      <div class="modal-content card" style="width: 90%; max-width: 600px; padding: 2rem; position: relative;">
+        <span class="close-modal" onclick="closeReportModal()" style="position: absolute; right: 1.5rem; top: 1rem; font-size: 1.5rem; cursor: pointer;">&times;</span>
+        <h2 id="report-modal-title" style="margin-bottom: 1.5rem;">Property Report</h2>
+        <div id="report-details" style="margin-bottom: 1.5rem;"></div>
+        <form id="report-form" style="display: none;">
+          <input type="hidden" id="report-complaint-id">
+          <div class="form-group">
+            <label for="report-content">Officer's Report</label>
+            <textarea id="report-content" class="input" rows="6" placeholder="Enter detailed report about the property..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Submit Report</button>
+        </form>
+      </div>
+    </div>
 
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/navbar.js?v=20260416b"></script>

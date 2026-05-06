@@ -11,7 +11,6 @@ const nodemailer = require("nodemailer");
  */
 const sendEmail = async ({ to, subject, text, html }) => {
 
-
   // ── Fallback: use Resend HTTP API if configured ──
   if (process.env.RESEND_API_KEY) {
     const response = await fetch("https://api.resend.com/emails", {

@@ -48,6 +48,35 @@
       </div>
     </footer>
 
+    <!-- Complaint Modal (Shared with Admin Dashboard) -->
+    <div id="complaint-modal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+      <div class="modal-content card" style="width: 90%; max-width: 500px; padding: 2rem; position: relative;">
+        <span class="close-modal" onclick="closeComplaintModal()" style="position: absolute; right: 1.5rem; top: 1rem; font-size: 1.5rem; cursor: pointer;">&times;</span>
+        <h2 style="margin-bottom: 1.5rem;">Report Suspicious Property</h2>
+        <form id="complaint-form">
+          <input type="hidden" id="complaint-property-id">
+          <div class="form-group">
+            <label for="complaint-recipient-type">Target Category</label>
+            <select id="complaint-recipient-type" class="input" onchange="filterRecipients()">
+              <option value="Government Officer">Government Officer</option>
+              <option value="User">Property Owner / User</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-top: 1rem;">
+            <label for="complaint-recipient">Select Recipient</label>
+            <select id="complaint-recipient" class="input" required>
+              <option value="">Select...</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-top: 1rem;">
+            <label for="complaint-description">Description of Suspicion</label>
+            <textarea id="complaint-description" class="input" rows="4" placeholder="Describe why this property is suspicious..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Submit Complaint</button>
+        </form>
+      </div>
+    </div>
+
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/navbar.js?v=20260416b"></script>
     <script src="/assets/js/property-details.js"></script>
