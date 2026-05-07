@@ -11,33 +11,7 @@ const nodemailer = require("nodemailer");
  */
 const sendEmail = async ({ to, subject, text, html }) => {
 
-  // ── Fallback: use Resend HTTP API if configured ──
-  if (process.env.RESEND_API_KEY) {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: process.env.EMAIL_FROM || "Land Registry System <onboarding@resend.dev>",
-        to,
-        subject,
-        text,
-        html,
-      }),
-    });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Resend API error:", data);
-      throw new Error(data.message || "Failed to send email via Resend");
-    }
-
-    console.log(`📧 Email sent via Resend to ${to} (id: ${data.id})`);
-    return data;
-  }
 
   // ── Local dev: use nodemailer with Gmail or Ethereal ──
   try {

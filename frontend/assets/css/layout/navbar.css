@@ -25,6 +25,8 @@
   letter-spacing: -0.5px;
   font-size: 1.2rem;
   color: var(--gov-blue-deep);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .brand-badge {
@@ -38,6 +40,7 @@
   font-size: 1rem;
   font-weight: 800;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .nav-toggle {
@@ -54,15 +57,18 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .nav-link {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 6px;
   color: #475569;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -75,7 +81,7 @@
   background: #e0e7ff;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1024px) {
   .nav-toggle {
     display: inline-flex;
   }
