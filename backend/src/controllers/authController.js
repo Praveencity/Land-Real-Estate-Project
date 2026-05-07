@@ -33,9 +33,7 @@ const sendOtp = async (req, res, next) => {
       text: `Your One-Time Password (OTP) for signing up is: ${otpCode}. It is valid for 10 minutes.`,
     });
 
-    console.log("----------------------------------------");
-    console.log(`🔑 SIGNUP OTP for ${email}: ${otpCode}`);
-    console.log("----------------------------------------");
+    console.log(`OTP for ${email}: ${otpCode}`);
 
     return res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
@@ -232,9 +230,7 @@ const forgotPassword = async (req, res, next) => {
       text: `Your password reset OTP is: ${otpCode}. It is valid for 10 minutes. If you did not request this, please ignore this email.`,
     });
 
-    console.log("----------------------------------------");
-    console.log(`🔑 PASSWORD RESET OTP for ${email}: ${otpCode}`);
-    console.log("----------------------------------------");
+    console.log(`Password reset OTP for ${email}: ${otpCode}`);
 
     return res.status(200).json({ message: "Password reset OTP sent to your email" });
   } catch (error) {
@@ -376,12 +372,6 @@ const inviteOfficer = async (req, res, next) => {
     });
 
     const setupUrl = `${process.env.CLIENT_URL}/pages/invite.html?token=${token}`;
-
-    console.log("----------------------------------------");
-    console.log("🎟️ OFFICER INVITATION CREATED");
-    console.log(`Email: ${email}`);
-    console.log(`Link: ${setupUrl}`);
-    console.log("----------------------------------------");
 
     await sendEmail({
       to: email,
