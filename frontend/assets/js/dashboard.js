@@ -40,9 +40,9 @@ const getActivityContext = (item = {}) => {
     return `Boundary Survey: ${propertyTitle}`;
   }
 
-  if (status === "approved") return `Archive Request Completed`;
-  if (status === "rejected") return `Archive Request Rejected`;
-  return `Archive Request #${item.registrationId || item.transactionId || "N/A"}`;
+  if (status === "approved") return `Registration Completed`;
+  if (status === "rejected") return `Registration Rejected`;
+  return `Registration Request #${item.registrationId || item.transactionId || "N/A"}`;
 };
 
 const getActivitySubtitle = (item = {}) => {
