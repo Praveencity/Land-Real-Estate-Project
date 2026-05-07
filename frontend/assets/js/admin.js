@@ -67,8 +67,6 @@ const loadUsers = async () => {
     usersRoot.innerHTML = users
       .map((user) => {
         const initials = user.fullName ? user.fullName.charAt(0).toUpperCase() : "?";
-        const roleOptions = ["User", "Government Officer", "Admin"].filter(r => r !== "Admin" || user.role === "Admin").map(r => `<option value="${r}" ${user.role === r ? "selected" : ""}>${r}</option>`).join("");
-        
         return `
         <article class="admin-user-card" style="display: flex; align-items: center; justify-content: space-between; padding: 1.2rem; margin-bottom: 0.8rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s; ${!user.isActive ? 'opacity: 0.6; filter: grayscale(1);' : ''}">
           <div style="display: flex; align-items: center; gap: 1rem;">
@@ -89,11 +87,6 @@ const loadUsers = async () => {
           </div>
           ${isAdmin && user.role !== "Admin" ? `
             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
-              <select id="role-select-${user._id}" class="input" style="padding: 0.4rem 0.5rem; font-size: 0.85rem; min-height: 0; width: 150px; border-radius: 6px;">
-                ${roleOptions}
-              </select>
-              <button onclick="changeRole('${user._id}')" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 6px;">Update</button>
-              <div style="width: 1px; height: 24px; background: #e2e8f0; margin: 0 0.25rem;"></div>
               <button onclick="toggleStatus('${user._id}', '${user.fullName}', ${user.isActive})" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; font-weight: 600; border-radius: 6px; background: ${user.isActive ? '#fffbeb' : '#f0fdf4'}; color: ${user.isActive ? '#b45309' : '#166534'}; border: 1px solid ${user.isActive ? '#fde68a' : '#bbf7d0'};">
                 ${user.isActive ? 'Suspend' : 'Activate'}
               </button>
@@ -188,22 +181,6 @@ window.deleteProperty = async (propertyId, title) => {
     showToast(res.message, "success");
     loadProperties();
     loadStats();
-  } catch (err) {
-    showToast(err.message, "error");
-  }
-};
-
-window.changeRole = async (userId) => {
-  const select = document.getElementById(`role-select-${userId}`);
-  if (!select) return;
-  const newRole = select.value;
-  try {
-    const res = await apiRequest(`/auth/users/${userId}/role`, {
-      method: "PATCH",
-      body: JSON.stringify({ role: newRole })
-    });
-    showToast(res.message, "success");
-    loadUsers();
   } catch (err) {
     showToast(err.message, "error");
   }

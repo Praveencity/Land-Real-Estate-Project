@@ -217,7 +217,6 @@ const renderWorkspace = (role, data) => {
   const navHtml = isGov
     ? `
         <a class="active" href="/pages/dashboard.html"><span class="svd-nav-icon">${ICONS.dashboard}</span>Dashboard</a>
-        <a href="/pages/transactions.html"><span class="svd-nav-icon">${ICONS.transactions}</span>Transactions</a>
         <a href="/pages/requests?verify=1"><span class="svd-nav-icon">${ICONS.verify}</span>Verify Requests</a>
         <a href="/pages/properties.html"><span class="svd-nav-icon">${ICONS.myProperties}</span>All Properties</a>
         <a href="/pages/admin-dashboard.html"><span class="svd-nav-icon">${ICONS.users}</span>Users</a>
@@ -225,7 +224,6 @@ const renderWorkspace = (role, data) => {
       `
     : `
         <a class="active" href="/pages/dashboard.html"><span class="svd-nav-icon">${ICONS.dashboard}</span>Dashboard</a>
-        <a href="/pages/transactions.html"><span class="svd-nav-icon">${ICONS.transactions}</span>Transactions</a>
         <a href="/pages/properties?view=add"><span class="svd-nav-icon">${ICONS.addProperty}</span>Add Property</a>
         <a href="/pages/properties.html"><span class="svd-nav-icon">${ICONS.buy}</span>Buy</a>
         <a href="/pages/properties?view=mine"><span class="svd-nav-icon">${ICONS.myProperties}</span>My Properties</a>
