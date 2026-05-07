@@ -1,3 +1,14 @@
 {
-  "cleanUrls": false
+  "cleanUrls": false,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/pages/properties", "destination": "/pages/properties.html" },
+    { "source": "/pages/dashboard", "destination": "/pages/dashboard.html" },
+    { "source": "/pages/login", "destination": "/pages/login.html" },
+    { "source": "/pages/register", "destination": "/pages/register.html" },
+    { "source": "/pages/admin-dashboard", "destination": "/pages/admin-dashboard.html" },
+    { "source": "/pages/transactions", "destination": "/pages/transactions.html" },
+    { "source": "/pages/requests", "destination": "/pages/requests.html" },
+    { "source": "/pages/complaints", "destination": "/pages/complaints.html" }
+  ]
 }

@@ -81,6 +81,14 @@ router.post(
 router.post("/logout", protect, logout);
 router.get("/me", protect, getMe);
 router.get("/users", protect, authorize("Admin", "Government Officer"), listUsers);
+// Any authenticated user can fetch the list of officers (needed for filing complaints)
+router.get("/officers", protect, async (req, res, next) => {
+  try {
+    const User = require("../models/User");
+    const officers = await User.find({ role: "Government Officer", isActive: true }).select("fullName email _id");
+    return res.status(200).json({ users: officers });
+  } catch (err) { next(err); }
+});
 router.delete("/users/:userId", protect, authorize("Admin"), deleteUser);
 router.patch("/users/:userId/role", protect, authorize("Admin"), [
   body("role").isIn(["User", "Government Officer"]).withMessage("Role must be User or Government Officer")

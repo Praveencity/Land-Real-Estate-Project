@@ -11,6 +11,7 @@ const menuByRole = {
     { label: "My Properties", href: "/pages/properties?view=mine" },
     { label: "Currently Selling", href: "/pages/properties?view=selling" },
     { label: "Requests", href: "/pages/requests.html" },
+    { label: "Complaints", href: "/pages/complaints.html" },
     { label: "Logout", href: "#logout", action: "logout" },
   ],
   buyer: [
@@ -37,6 +38,7 @@ const menuByRole = {
     { label: "All Properties", href: "/pages/properties.html" },
     { label: "Users", href: "/pages/admin-dashboard.html" },
     { label: "Invite Officer", href: "/pages/invite-officer.html" },
+    { label: "Complaints", href: "/pages/complaints.html" },
     { label: "Logout", href: "#logout", action: "logout" },
   ],
   "government officer": [
@@ -44,6 +46,7 @@ const menuByRole = {
     { label: "Verify Requests", href: "/pages/requests?verify=1" },
     { label: "All Properties", href: "/pages/properties.html" },
     { label: "Users", href: "/pages/admin-dashboard.html" },
+    { label: "Complaints", href: "/pages/complaints.html" },
     { label: "Logout", href: "#logout", action: "logout" },
   ],
 };
