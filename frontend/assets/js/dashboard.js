@@ -254,7 +254,7 @@ const renderWorkspace = (role, data) => {
 
     <section class="svd-main">
       <header class="svd-topbar">
-        <h2 class="svd-topbar-title">The Sovereign Archive</h2>
+        <h2 class="svd-topbar-title">Land Registry Dashboard</h2>
         <div class="svd-topbar-actions">
           <div class="nav-notification-wrapper" id="notification-wrapper">
             <button class="nav-notification-btn" id="notification-btn" aria-label="Notifications" style="margin-right: 15px;">
@@ -282,7 +282,7 @@ const renderWorkspace = (role, data) => {
 
       <div class="svd-content">
         <h1>Welcome Back, ${firstName}</h1>
-        <p class="svd-subtitle">Your portfolio overview and pending administrative tasks.</p>
+        <p class="svd-subtitle">${isGov ? 'System overview and pending administrative tasks.' : 'Your property portfolio and pending requests.'}</p>
 
         <div class="svd-grid">
           ${metrics
