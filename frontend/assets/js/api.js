@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:5000";
+const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:5000" : "https://land-real-estate-project.onrender.com";
 const API_BASE_URL = `${SERVER_URL}/api`;
 
 const getToken = () => localStorage.getItem("lrs_token");
