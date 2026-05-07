@@ -6,6 +6,7 @@ const menuByRole = {
   ],
   user: [
     { label: "Dashboard", href: "/pages/dashboard.html" },
+    { label: "Transactions", href: "/pages/transactions.html" },
     { label: "Add Property", href: "/pages/properties?view=add" },
     { label: "Buy", href: "/pages/properties.html" },
     { label: "My Properties", href: "/pages/properties?view=mine" },
@@ -15,6 +16,7 @@ const menuByRole = {
   ],
   buyer: [
     { label: "Dashboard", href: "/pages/dashboard.html" },
+    { label: "Transactions", href: "/pages/transactions.html" },
     { label: "Add Property", href: "/pages/properties?view=add" },
     { label: "Buy", href: "/pages/properties.html" },
     { label: "My Properties", href: "/pages/properties?view=mine" },
@@ -24,6 +26,7 @@ const menuByRole = {
   ],
   seller: [
     { label: "Dashboard", href: "/pages/dashboard.html" },
+    { label: "Transactions", href: "/pages/transactions.html" },
     { label: "Add Property", href: "/pages/properties?view=add" },
     { label: "Buy", href: "/pages/properties.html" },
     { label: "My Properties", href: "/pages/properties?view=mine" },
@@ -33,6 +36,7 @@ const menuByRole = {
   ],
   admin: [
     { label: "Dashboard", href: "/pages/dashboard.html" },
+    { label: "Transactions", href: "/pages/transactions.html" },
     { label: "Verify Requests", href: "/pages/requests?verify=1" },
     { label: "All Properties", href: "/pages/properties.html" },
     { label: "Users", href: "/pages/admin-dashboard.html" },
@@ -41,6 +45,7 @@ const menuByRole = {
   ],
   "government officer": [
     { label: "Dashboard", href: "/pages/dashboard.html" },
+    { label: "Transactions", href: "/pages/transactions.html" },
     { label: "Verify Requests", href: "/pages/requests?verify=1" },
     { label: "All Properties", href: "/pages/properties.html" },
     { label: "Users", href: "/pages/admin-dashboard.html" },

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transactions • Land Registry System</title>
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20260416b" />
+  </head>
+  <body data-auth="private">
+    <header id="navbar-root"></header>
+
+    <main class="container">
+      <section class="page-header">
+        <h1>Transaction History</h1>
+        <p>View all property transfers and registration payments.</p>
+      </section>
+
+      <section class="card" id="transactions-container">
+        <div id="transactions-loading" class="skeleton-list">
+          <div class="skeleton-item"></div>
+          <div class="skeleton-item"></div>
+          <div class="skeleton-item"></div>
+        </div>
+        
+        <div id="transactions-list" class="requests-list">
+          <!-- Transactions will be injected here -->
+        </div>
+
+        <div id="no-transactions" class="empty-state" style="display: none;">
+          <div class="empty-icon">💸</div>
+          <h3>No transactions found</h3>
+          <p>You haven't participated in any property transactions yet.</p>
+          <a href="/pages/properties.html" class="btn btn-primary mt-1">Browse Properties</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer modern-footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="logo-icon">LRS</span>
+            <span class="logo-text">Land Registry System</span>
+          </div>
+          <p class="footer-tagline">Secure, transparent, and verified land records.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>Platform</h4>
+            <a href="/pages/properties.html">Buy Property</a>
+            <a href="/pages/properties?view=selling">Sell Property</a>
+            <a href="/pages/dashboard.html">Dashboard</a>
+          </div>
+          <div class="footer-col">
+            <h4>Legal</h4>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Land Registry System. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/navbar.js?v=20260416b"></script>
+    <script src="/assets/js/transactions.js"></script>
+  </body>
+</html>

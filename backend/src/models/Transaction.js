@@ -29,6 +29,11 @@ const transactionSchema = new mongoose.Schema(
       type: Number,
       min: 0,
     },
+    transactionType: {
+      type: String,
+      enum: ["Transfer", "New Registration", "Inheritance", "System"],
+      default: "Transfer",
+    },
     status: {
       type: String,
       enum: ["Pending", "Approved", "Rejected"],

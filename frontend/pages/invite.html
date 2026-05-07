@@ -22,9 +22,9 @@
             <input class="input" id="fullName" type="text" placeholder="John Doe" required style="width: 100%;" />
           </div>
 
-          <div style="margin-bottom: 1.2rem;">
+          <div id="gov-id-group" style="margin-bottom: 1.2rem; display: none;">
             <label for="governmentId" style="display: block; margin-bottom: 0.3rem; font-weight: 600;">Government Employee ID</label>
-            <input class="input" id="governmentId" type="text" placeholder="e.g., GOV-12345" required style="width: 100%;" />
+            <input class="input" id="governmentId" type="text" placeholder="e.g., GOV-12345" style="width: 100%;" />
           </div>
 
           <div style="margin-bottom: 1.2rem;">
@@ -52,12 +52,32 @@
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get("token");
       const msgEl = document.getElementById("setup-message");
+      let invitedRole = "";
 
-      if (!token) {
-        msgEl.textContent = "Invalid setup link. Missing token.";
-        msgEl.style.color = "var(--danger)";
-        document.getElementById("submit-btn").disabled = true;
-      }
+      const init = async () => {
+        if (!token) {
+          msgEl.textContent = "Invalid setup link. Missing token.";
+          msgEl.style.color = "var(--danger)";
+          document.getElementById("submit-btn").disabled = true;
+          return;
+        }
+
+        try {
+          const res = await apiRequest(`/auth/invite/${token}`);
+          invitedRole = res.role;
+          if (invitedRole === "Government Officer") {
+            document.getElementById("gov-id-group").style.display = "block";
+            document.getElementById("governmentId").required = true;
+          }
+          document.querySelector("p").textContent = `Welcome! Complete your ${invitedRole} account registration.`;
+        } catch (err) {
+          msgEl.textContent = "This invitation is invalid or has expired.";
+          msgEl.style.color = "var(--danger)";
+          document.getElementById("submit-btn").disabled = true;
+        }
+      };
+
+      init();
 
       document.getElementById("officer-setup-form").addEventListener("submit", async (e) => {
         e.preventDefault();

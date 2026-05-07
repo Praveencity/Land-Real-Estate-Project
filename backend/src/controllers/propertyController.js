@@ -4,6 +4,8 @@ const Registration = require("../models/Registration");
 const { generateAndAttachCertificate } = require("../utils/certificateGenerator");
 const generateId = require("../utils/generateId");
 
+const isCloudinaryConfigured = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
+
 const createProperty = async (req, res, next) => {
   try {
     const { title, titleNumber, location, price, area, type, bedrooms, bathrooms, plotSize } = req.body;
@@ -51,20 +53,25 @@ const createProperty = async (req, res, next) => {
       ...(req.files?.documents || [])
     ];
 
-    if (allFiles.length > 0) {
+    if (allFiles && allFiles.length > 0) {
       const docs = await Promise.all(
-        allFiles.map((file) =>
-          Document.create({
+        allFiles.map((file) => {
+          let finalPath = file.path;
+          if (!isCloudinaryConfigured && file.filename) {
+            finalPath = `/uploads/${file.filename}`;
+          }
+          
+          return Document.create({
             documentId: generateId("DOC"),
             originalName: file.originalname,
-            filePath: file.path,
+            filePath: finalPath,
             mimeType: file.mimetype,
             size: file.size,
             uploadedBy: req.user._id,
             property: property._id,
             kind: "PROPERTY_DOC",
-          })
-        )
+          });
+        })
       );
 
       property.documents = docs.map((doc) => doc._id);
@@ -255,18 +262,23 @@ const updateProperty = async (req, res, next) => {
 
     if (allFiles.length > 0) {
       const docs = await Promise.all(
-        allFiles.map((file) =>
-          Document.create({
+        allFiles.map((file) => {
+          let finalPath = file.path;
+          if (!isCloudinaryConfigured && file.filename) {
+            finalPath = `/uploads/${file.filename}`;
+          }
+
+          return Document.create({
             documentId: generateId("DOC"),
             originalName: file.originalname,
-            filePath: file.path,
+            filePath: finalPath,
             mimeType: file.mimetype,
             size: file.size,
             uploadedBy: req.user._id,
             property: property._id,
             kind: "PROPERTY_DOC",
-          })
-        )
+          });
+        })
       );
 
       property.documents.push(...docs.map((doc) => doc._id));

@@ -115,32 +115,39 @@ const generateAndAttachCertificate = async (propertyId, officerId, transactionDa
       writeStream.on("error", reject);
     });
 
-    // Upload to Cloudinary
-    let cloudinaryUrl;
-    try {
-      const result = await cloudinary.uploader.upload(absolutePath, {
-        folder: "land_registry_certificates",
-        resource_type: "image", // Store PDF as image resource type in Cloudinary
-        public_id: `${certId}-${Date.now()}`
-      });
-      cloudinaryUrl = result.secure_url;
-      
-      // Clean up local file
-      if (fs.existsSync(absolutePath)) {
-        fs.unlinkSync(absolutePath);
+    // 3. Upload or Keep Local
+    let finalUrl;
+    const isCloudinaryConfigured = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
+
+    if (isCloudinaryConfigured) {
+      try {
+        const result = await cloudinary.uploader.upload(absolutePath, {
+          folder: "land_registry_certificates",
+          resource_type: "image",
+          public_id: `${certId}-${Date.now()}`
+        });
+        finalUrl = result.secure_url;
+        
+        // Clean up local file
+        if (fs.existsSync(absolutePath)) {
+          fs.unlinkSync(absolutePath);
+        }
+      } catch (uploadError) {
+        console.error("Cloudinary upload error, falling back to local:", uploadError);
+        finalUrl = `/uploads/${fileName}`;
       }
-    } catch (uploadError) {
-      console.error("Cloudinary upload error:", uploadError);
-      throw new Error("Failed to upload certificate to cloud storage.");
+    } else {
+      // Keep it local
+      finalUrl = `/uploads/${fileName}`;
     }
 
-    // 3. Save new Document record
+    // 4. Save new Document record
     const savedDocument = await Document.create({
       documentId: certId,
       originalName: "Official_Certificate.pdf",
-      filePath: cloudinaryUrl,
+      filePath: finalUrl,
       mimeType: "application/pdf",
-      size: 0, // Size is stored in Cloudinary, so 0 or result.bytes
+      size: 0,
       uploadedBy: officerId,
       property: property._id,
       kind: "CERTIFICATE",

@@ -11,29 +11,36 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const sendOtp = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, type } = req.body; // type: 'signup' or 'login'
     
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    
+    if (type === "signup" && existingUser) {
       return res.status(409).json({ message: "Email is already registered" });
+    }
+
+    if (type === "login" && !existingUser) {
+      return res.status(404).json({ message: "No account found with this email" });
     }
 
     // Generate 6-digit OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save to DB (overwrites existing OTP for this email if any)
+    // Save to DB
     await Otp.deleteMany({ email });
     await Otp.create({ email, otp: otpCode });
 
-    // Send email
-    await sendEmail({
-      to: email,
-      subject: "Your OTP for Land Registry System",
-      text: `Your One-Time Password (OTP) for signing up is: ${otpCode}. It is valid for 10 minutes.`,
-    });
+    const subject = type === "login" ? "Login OTP - Land Registry System" : "Signup OTP - Land Registry System";
+    const text = type === "login" 
+      ? `Your One-Time Password (OTP) for logging in is: ${otpCode}. It is valid for 10 minutes.`
+      : `Your One-Time Password (OTP) for signing up is: ${otpCode}. It is valid for 10 minutes.`;
 
-    console.log(`OTP for ${email}: ${otpCode}`);
+    // Send email
+    await sendEmail({ to: email, subject, text });
+
+    console.log("----------------------------------------");
+    console.log(`🔑 OTP (${type}) for ${email}: ${otpCode}`);
+    console.log("----------------------------------------");
 
     return res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
@@ -41,6 +48,44 @@ const sendOtp = async (req, res, next) => {
     if (error.code === "EAUTH") {
        return res.status(500).json({ message: "Email configuration error. Please check EMAIL_USER and EMAIL_PASS." });
     }
+    next(error);
+  }
+};
+
+const loginWithOtp = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    const validOtp = await Otp.findOne({ email, otp });
+    if (!validOtp) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({ message: "Your account has been suspended" });
+    }
+
+    // Delete used OTP
+    await Otp.deleteMany({ email });
+
+    const token = createToken(user);
+
+    return res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
     next(error);
   }
 };
@@ -352,7 +397,8 @@ const toggleUserStatus = async (req, res, next) => {
 
 const inviteOfficer = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, role } = req.body;
+    const assignedRole = role || "Government Officer";
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -369,19 +415,29 @@ const inviteOfficer = async (req, res, next) => {
       token,
       invitedBy: req.user._id,
       expiresAt,
+      role: assignedRole
     });
 
     const setupUrl = `${process.env.CLIENT_URL}/pages/invite.html?token=${token}`;
 
+    console.log("----------------------------------------");
+    console.log(`🎟️ ${assignedRole.toUpperCase()} INVITATION CREATED`);
+    console.log(`Email: ${email}`);
+    console.log(`Link: ${setupUrl}`);
+    console.log("----------------------------------------");
     await sendEmail({
       to: email,
-      subject: "Invitation to Join Land Registry System as Government Officer",
+      subject: `Invitation to Join Land Registry System as ${assignedRole}`,
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Government Officer Invitation</h2>
-          <p>You have been invited by an Administrator to join the Land Registry System as a Government Officer.</p>
-          <p>Click the link below to set up your account. This link will expire in 48 hours.</p>
-          <a href="${setupUrl}" style="display: inline-block; padding: 10px 20px; background-color: #0b2e59; color: white; text-decoration: none; border-radius: 5px;">Set Up Account</a>
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+          <h2 style="color: #0b2e59;">Land Registry System Invitation</h2>
+          <p>You have been invited by an Administrator to join the platform as a <strong>${assignedRole}</strong>.</p>
+          <p>Click the button below to set up your account. This link will expire in 48 hours.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${setupUrl}" style="display: inline-block; padding: 12px 24px; background-color: #0b2e59; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Set Up Your Account</a>
+          </div>
+          <p style="color: #666; font-size: 0.9rem;">If the button above doesn't work, copy and paste this URL into your browser:</p>
+          <p style="word-break: break-all; color: #0b2e59; font-size: 0.8rem;">${setupUrl}</p>
         </div>
       `,
     });
@@ -413,7 +469,7 @@ const setupOfficer = async (req, res, next) => {
       fullName,
       email: invitation.email,
       password: hashedPassword,
-      role: "Government Officer",
+      role: invitation.role || "Government Officer",
       governmentId,
     });
 
@@ -422,7 +478,7 @@ const setupOfficer = async (req, res, next) => {
     const authToken = createToken(user);
 
     return res.status(201).json({
-      message: "Officer account created successfully",
+      message: "Account created successfully",
       token: authToken,
       user: {
         id: user._id,
@@ -446,6 +502,7 @@ module.exports = {
   changeUserRole,
   toggleUserStatus,
   sendOtp,
+  loginWithOtp,
   googleAuth,
   forgotPassword,
   resetPassword,

@@ -17,9 +17,18 @@
         </div>
 
         <form id="invite-officer-form">
+          <div style="margin-bottom: 1.2rem;">
+            <label for="invite-email" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Recipient's Email Address</label>
+            <input class="input" id="invite-email" type="email" placeholder="user@example.com" required style="width: 100%; padding: 0.8rem;" />
+          </div>
+
           <div style="margin-bottom: 1.5rem;">
-            <label for="invite-email" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Officer's Email Address</label>
-            <input class="input" id="invite-email" type="email" placeholder="officer@gov.in" required style="width: 100%; padding: 0.8rem;" />
+            <label for="invite-role" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Assign Role</label>
+            <select class="input" id="invite-role" style="width: 100%; padding: 0.8rem;">
+              <option value="Government Officer">Government Officer</option>
+              <option value="User">Regular User</option>
+              <option value="Admin">Administrator</option>
+            </select>
           </div>
 
           <button class="btn btn-primary" type="submit" id="invite-btn" style="width: 100%; padding: 0.8rem; font-size: 1rem;">
@@ -67,9 +76,11 @@
             inviteBtn.disabled = true;
             inviteBtn.textContent = "Sending...";
             
+            const role = document.getElementById("invite-role").value;
+            
             const res = await apiRequest("/auth/invite-officer", {
               method: "POST",
-              body: JSON.stringify({ email })
+              body: JSON.stringify({ email, role })
             });
             
             msgEl.textContent = res.message || "Invitation sent successfully!";

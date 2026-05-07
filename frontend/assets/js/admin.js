@@ -114,6 +114,12 @@ const loadUsers = async () => {
 const loadProperties = async () => {
   if (!propertiesRoot) return;
 
+  const role = roleKey(currentUser?.role);
+  if (!["admin", "government officer"].includes(role)) {
+    propertiesRoot.innerHTML = "<p>Access restricted to Admin and Government Officer.</p>";
+    return;
+  }
+
   propertiesRoot.innerHTML = `<p class="svd-empty">Loading properties...</p>`;
 
   try {
@@ -219,5 +225,4 @@ window.addEventListener("DOMContentLoaded", () => {
   loadStats();
   loadUsers();
   loadProperties();
-
 });

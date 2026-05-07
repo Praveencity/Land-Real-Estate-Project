@@ -10,6 +10,7 @@ const {
   changeUserRole,
   toggleUserStatus,
   sendOtp,
+  loginWithOtp,
   googleAuth,
   forgotPassword,
   resetPassword,
@@ -34,7 +35,7 @@ router.post("/forgot-password", [
 ], validate, forgotPassword);
 
 router.post("/reset-password", [
-  body("email").isEmail().withMessage("Valid email is required"),
+  body("email").isEmail().withMessage("Valid email is required").normalizeEmail(),
   body("otp").notEmpty().withMessage("OTP is required"),
   body("newPassword").isLength({ min: 8 }).withMessage("Password must be at least 8 characters")
 ], validate, resetPassword);
@@ -60,11 +61,21 @@ router.post(
 router.post(
   "/login",
   [
-    body("email").isEmail().withMessage("Valid email is required"),
+    body("email").isEmail().withMessage("Valid email is required").normalizeEmail(),
     body("password").notEmpty().withMessage("Password is required"),
   ],
   validate,
   login
+);
+
+router.post(
+  "/login-otp",
+  [
+    body("email").isEmail().withMessage("Valid email is required").normalizeEmail(),
+    body("otp").notEmpty().withMessage("OTP is required"),
+  ],
+  validate,
+  loginWithOtp
 );
 
 router.post("/logout", protect, logout);
@@ -79,6 +90,16 @@ router.patch("/users/:userId/status", protect, authorize("Admin"), toggleUserSta
 router.post("/invite-officer", protect, authorize("Admin"), [
   body("email").isEmail().withMessage("Valid email is required").normalizeEmail()
 ], validate, inviteOfficer);
+
+router.get("/invite/:token", async (req, res) => {
+  try {
+    const invitation = await require("../models/Invitation").findOne({ token: req.params.token });
+    if (!invitation) return res.status(404).json({ message: "Invitation not found or expired" });
+    res.status(200).json({ email: invitation.email, role: invitation.role });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 router.post("/setup-officer", [
   body("token").notEmpty().withMessage("Token is required"),

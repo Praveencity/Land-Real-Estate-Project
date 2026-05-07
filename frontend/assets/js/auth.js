@@ -19,30 +19,65 @@ const bindPasswordToggles = () => {
 bindPasswordToggles();
 
 const sendOtpBtn = document.getElementById("send-otp-btn");
+const sendLoginOtpBtn = document.getElementById("send-login-otp-btn");
+
+const handleSendOtp = async (btn, type) => {
+  const emailInput = document.getElementById("email");
+  if (!emailInput || !emailInput.value) {
+    if (typeof showToast === "function") showToast("Please enter an email first", "error");
+    return;
+  }
+  try {
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+    await apiRequest("/auth/send-otp", {
+      method: "POST",
+      body: JSON.stringify({ email: emailInput.value, type })
+    });
+    if (typeof showToast === "function") showToast("OTP sent! Check your email.", "success");
+    btn.textContent = "Sent!";
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = "Resend OTP";
+    }, 30000);
+  } catch (err) {
+    if (typeof showToast === "function") showToast(err.message, "error");
+    btn.disabled = false;
+    btn.textContent = "Send OTP";
+  }
+};
+
 if (sendOtpBtn) {
-  sendOtpBtn.addEventListener("click", async () => {
-    const emailInput = document.getElementById("email");
-    if (!emailInput || !emailInput.value) {
-      if (typeof showToast === "function") showToast("Please enter an email first", "error");
-      return;
-    }
-    try {
-      sendOtpBtn.disabled = true;
-      sendOtpBtn.textContent = "Sending...";
-      await apiRequest("/auth/send-otp", {
-        method: "POST",
-        body: JSON.stringify({ email: emailInput.value })
-      });
-      if (typeof showToast === "function") showToast("OTP sent! (If you are using Ethereal, check backend terminal)", "success");
-      sendOtpBtn.textContent = "Sent!";
-      setTimeout(() => {
-        sendOtpBtn.disabled = false;
-        sendOtpBtn.textContent = "Resend OTP";
-      }, 30000); // Allow resend after 30s
-    } catch (err) {
-      if (typeof showToast === "function") showToast(err.message, "error");
-      sendOtpBtn.disabled = false;
-      sendOtpBtn.textContent = "Send OTP";
+  sendOtpBtn.addEventListener("click", () => handleSendOtp(sendOtpBtn, "signup"));
+}
+if (sendLoginOtpBtn) {
+  sendLoginOtpBtn.addEventListener("click", () => handleSendOtp(sendLoginOtpBtn, "login"));
+}
+
+const toggleOtpBtn = document.getElementById("toggle-otp-login");
+if (toggleOtpBtn) {
+  toggleOtpBtn.addEventListener("click", () => {
+    const passGroup = document.getElementById("password-group");
+    const otpGroup = document.getElementById("otp-group");
+    const forgotPass = document.querySelector('a[href="forgot-password.html"]');
+    const isOtpMode = otpGroup.style.display === "block";
+
+    if (isOtpMode) {
+      otpGroup.style.display = "none";
+      passGroup.style.display = "block";
+      if (forgotPass) forgotPass.parentElement.style.display = "block";
+      toggleOtpBtn.textContent = "Login with OTP instead";
+      authForm.dataset.mode = "login";
+      document.getElementById("password").required = true;
+      document.getElementById("otp").required = false;
+    } else {
+      otpGroup.style.display = "block";
+      passGroup.style.display = "none";
+      if (forgotPass) forgotPass.parentElement.style.display = "none";
+      toggleOtpBtn.textContent = "Login with Password instead";
+      authForm.dataset.mode = "login-otp";
+      document.getElementById("password").required = false;
+      document.getElementById("otp").required = true;
     }
   });
 }
@@ -86,7 +121,10 @@ if (authForm) {
         delete payload.terms;
       }
 
-      const endpoint = mode === "register" ? "/auth/signup" : "/auth/login";
+      let endpoint;
+      if (mode === "register") endpoint = "/auth/signup";
+      else if (mode === "login-otp") endpoint = "/auth/login-otp";
+      else endpoint = "/auth/login";
 
       const data = await apiRequest(endpoint, {
         method: "POST",

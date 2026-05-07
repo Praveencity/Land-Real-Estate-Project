@@ -74,7 +74,7 @@ const apiRequest = async (path, options = {}) => {
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
       clearAuth();
       if (document.body.dataset.auth === "private") {
         window.location.href = "/pages/login.html";
@@ -83,6 +83,12 @@ const apiRequest = async (path, options = {}) => {
       }
       throw new Error("Session expired. Please log in again.");
     }
+    
+    if (response.status === 403) {
+      const message = data.message || "You do not have permission to perform this action.";
+      throw new Error(message);
+    }
+
     const message = data.message || "Request failed";
     throw new Error(message);
   }

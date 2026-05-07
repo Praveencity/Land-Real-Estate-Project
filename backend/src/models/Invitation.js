@@ -24,6 +24,11 @@ const invitationSchema = new mongoose.Schema(
       required: true,
       expires: 0, // MongoDB will automatically delete the document when this date is reached
     },
+    role: {
+      type: String,
+      enum: ["Admin", "User", "Government Officer"],
+      default: "Government Officer",
+    },
   },
   {
     timestamps: true,
